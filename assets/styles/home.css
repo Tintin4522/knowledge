@@ -1,0 +1,29 @@
+.presentation {
+    width: 70%;                   
+    margin: 3rem auto;              
+    padding: 20px;               
+    background-color: #f1f8fc;  
+    border-radius: 15px;      
+    box-shadow: 0 2px 15px #0074c7; 
+}
+
+.presentation h1 {
+    font-size: 2.5rem;           
+    color: #0074c7;    
+    margin-bottom: 2rem;             
+}
+
+.presentation h2 {
+    font-size: 2rem;             
+    color: #00497c;                 
+    margin-top: 20px;
+    margin-bottom: 2rem;           
+}
+
+.presentation p {
+    font-size: 1rem;             
+    color: #384050;               
+    line-height: 1.5;            
+    margin-top: 10px;  
+    margin-bottom: 2rem;          
+}
