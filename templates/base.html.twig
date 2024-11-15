@@ -34,12 +34,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="#">Boutique</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#"></a>
-                            </li>
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">Back-office</a>
+                                    <a class="nav-link" href="{{ path('admin_dashboard') }}">Back-office</a>
                                 </li>
                             {% endif %}
                             <li class="nav-item">

@@ -8,17 +8,36 @@ use App\Entity\Lessons;
 use App\Form\ThemeType;
 use App\Form\CourseType;
 use App\Form\LessonType;
+use App\Repository\ThemesRepository;
+use App\Repository\CoursesRepository;
+use App\Repository\LessonsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
 {
     #[Route('/admin', name: 'admin_dashboard')]
-    public function adminDashboard()
+    public function index(CoursesRepository $coursesRepo, LessonsRepository $lessonsRepo): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+        $courses = $coursesRepo->findAll();  // Récupère tous les cursus
+        $lessons = $lessonsRepo->findAll();  // Récupère toutes les leçons
+    
+        // Tableau pour associer chaque cursus avec ses leçons
+        $groupedLessonsByCourse = [];
+    
+        // Regroupe les leçons par cursus
+        foreach ($lessons as $lesson) {
+            $courseId = $lesson->getCourse()->getId();  // Récupère l'ID du cursus lié à cette leçon
+            $groupedLessonsByCourse[$courseId][] = $lesson;
+        }
+    
+        return $this->render('admin/dashboard.html.twig', [
+            'courses' => $courses,
+            'groupedLessonsByCourse' => $groupedLessonsByCourse,
+        ]);
     }
 
     #[Route('/admin/theme/add', name: 'admin_theme_add')]

@@ -16,7 +16,7 @@ class Lessons
     #[ORM\Column]
     private ?int $lesson_id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'lessons')]
+    #[ORM\ManyToOne(targetEntity: Courses::class, inversedBy: 'lessons')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Courses $courses_id = null;
 
@@ -46,6 +46,24 @@ class Lessons
         $this->orderItems = new ArrayCollection();
         $this->lessonCompletions = new ArrayCollection();
     }
+
+    public function getId(): ?int
+    {
+        return $this->lesson_id;
+    }
+
+    public function getCourse(): ?Courses
+    {
+        return $this->courses_id;
+    }
+
+    public function setCourse(?Courses $course): self
+    {
+        $this->courses_id = $course;
+
+        return $this;
+    }
+
 
     public function getLessonId(): ?int
     {
