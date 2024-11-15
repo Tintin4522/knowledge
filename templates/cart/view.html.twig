@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">Mon Panier</h1>
+
+        {% if cart is empty %}
+            <div class="alert alert-info">Votre panier est vide.</div>
+        {% else %}
+            <table class="table table-bordered mt-4">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Quantité</th>
+                        <th>Prix Unitaire</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for type, items in cart %}
+                        {% for item in items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.price }}€</td>
+                                <td>{{ item.price * item.quantity }}€</td>
+                                <td>
+                                    <a href="{{ path('cart_remove', { 'type': type, 'id': item.id }) }}" class="btn btn-danger">Supprimer</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between mt-4">
+                <h3>Total : {{ total }}€</h3>
+                <a href="#" class="btn btn-success">Passer à la caisse</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
