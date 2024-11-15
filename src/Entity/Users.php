@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
@@ -10,11 +12,8 @@ class Users
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
-
-    #[ORM\Column]
-    private ?int $user_id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;
@@ -40,21 +39,34 @@ class Users
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $updated_by = null;
 
-    public function getId(): ?int
+    /**
+     * @var Collection<int, Order>
+     */
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user_id', orphanRemoval: true)]
+    private Collection $orders;
+
+    /**
+     * @var Collection<int, Certifications>
+     */
+    #[ORM\OneToMany(targetEntity: Certifications::class, mappedBy: 'user_id', orphanRemoval: true)]
+    private Collection $certifications;
+
+    /**
+     * @var Collection<int, LessonCompletion>
+     */
+    #[ORM\OneToMany(targetEntity: LessonCompletion::class, mappedBy: 'user_id', orphanRemoval: true)]
+    private Collection $lessonCompletions;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->orders = new ArrayCollection();
+        $this->certifications = new ArrayCollection();
+        $this->lessonCompletions = new ArrayCollection();
     }
 
     public function getUserId(): ?int
     {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): static
-    {
-        $this->user_id = $user_id;
-
-        return $this;
+        return $this->id;
     }
 
     public function getEmail(): ?string
@@ -149,6 +161,96 @@ class Users
     public function setUpdatedBy(?string $updated_by): static
     {
         $this->updated_by = $updated_by;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Order>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Order $order): static
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders->add($order);
+            $order->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): static
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getUserId() === $this) {
+                $order->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Certifications>
+     */
+    public function getCertifications(): Collection
+    {
+        return $this->certifications;
+    }
+
+    public function addCertification(Certifications $certification): static
+    {
+        if (!$this->certifications->contains($certification)) {
+            $this->certifications->add($certification);
+            $certification->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCertification(Certifications $certification): static
+    {
+        if ($this->certifications->removeElement($certification)) {
+            // set the owning side to null (unless already changed)
+            if ($certification->getUserId() === $this) {
+                $certification->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LessonCompletion>
+     */
+    public function getLessonCompletions(): Collection
+    {
+        return $this->lessonCompletions;
+    }
+
+    public function addLessonCompletion(LessonCompletion $lessonCompletion): static
+    {
+        if (!$this->lessonCompletions->contains($lessonCompletion)) {
+            $this->lessonCompletions->add($lessonCompletion);
+            $lessonCompletion->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLessonCompletion(LessonCompletion $lessonCompletion): static
+    {
+        if ($this->lessonCompletions->removeElement($lessonCompletion)) {
+            // set the owning side to null (unless already changed)
+            if ($lessonCompletion->getUserId() === $this) {
+                $lessonCompletion->setUserId(null);
+            }
+        }
 
         return $this;
     }

@@ -4,7 +4,6 @@ header {
     padding-bottom: 2px;
     display: flex; 
     align-items: flex-start;
-    border-bottom: 3px solid #0074c7;
     box-shadow: 0 2px 15px rgba(0, 116, 199, 0.8); 
 }
 
