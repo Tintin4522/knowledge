@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+
+{% block title %}Ajouter une lesson{% endblock %}
+
+{% block body %}
+    <h1>Ajouter une Leçon</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.price) }}
+        {{ form_row(form.content) }}
+        {{ form_row(form.courses_id) }} {# Liste déroulante des cursus existants #}
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a>
+
+    {% for message in app.session.flashbag.get('success') %}
+        <div class="alert alert-success mt-3">{{ message }}</div>
+    {% endfor %}
+{% endblock %}

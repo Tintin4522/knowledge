@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashbord administration{% endblock %}
+
+{% block body %}
+    <h1>Tableau de bord de l'administration</h1>
+
+    <div class="admin-buttons">
+        <a href="{{ path('admin_theme_add') }}" class="btn btn-primary">Ajouter un Thème</a>
+        <a href="{{ path('admin_course_add') }}" class="btn btn-primary">Ajouter un Cursus</a>
+        <a href="{{ path('admin_lesson_add') }}" class="btn btn-primary">Ajouter une Leçon</a>
+    </div>
+{% endblock %}
