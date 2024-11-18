@@ -8,7 +8,6 @@ use App\Entity\Lessons;
 use App\Form\ThemeType;
 use App\Form\CourseType;
 use App\Form\LessonType;
-use App\Repository\ThemesRepository;
 use App\Repository\CoursesRepository;
 use App\Repository\LessonsRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
 {
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     #[Route('/admin', name: 'admin_dashboard')]
     public function index(CoursesRepository $coursesRepo, LessonsRepository $lessonsRepo): Response
     {
@@ -96,6 +102,40 @@ class AdminController extends AbstractController
         }
 
         return $this->render('admin/lesson_add.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/admin/course/edit/{id}', name: 'admin_course_edit')]
+    public function editCourse(Courses $course, Request $request, EntityManagerInterface $em)
+    {
+        $form = $this->createForm(CourseType::class, $course);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Cursus modifié avec succès!');
+            return $this->redirectToRoute('admin_dashboard');
+        }
+
+        return $this->render('admin/course_edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/admin/lesson/edit/{id}', name: 'admin_lesson_edit')]
+    public function editLesson(Lessons $lesson, Request $request, EntityManagerInterface $em)
+    {
+        $form = $this->createForm(LessonType::class, $lesson);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+            $this->addFlash('success', 'Leçon modifiée avec succès!');
+            return $this->redirectToRoute('admin_dashboard');
+        }
+
+        return $this->render('admin/lesson_edit.html.twig', [
             'form' => $form->createView(),
         ]);
     }

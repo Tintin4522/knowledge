@@ -1,42 +1,57 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/back_office.css') }}">
+{% endblock %}
+
 {% block title %}Tableau de bord de l'administration{% endblock %}
 
 {% block body %}
-    <h1 class="title-back text-center my-4">Tableau de bord de l'administration</h1>
+    <div class="back-container mt-5 mb-5">
+        <h1 class="title-back text-center my-4">Administration du site</h1>
+        <hr class="separator">
+        <div class="admin-buttons d-flex justify-content-center gap-3 my-4">
+            <a href="{{ path('admin_theme_add') }}" class="btn btn-primary">Ajouter un Thème</a>
+            <a href="{{ path('admin_course_add') }}" class="btn btn-primary">Ajouter un Cursus</a>
+            <a href="{{ path('admin_lesson_add') }}" class="btn btn-primary">Ajouter une Leçon</a>
+        </div>
+        <hr class="separator">
+        <hr class="separator">
+        <h2 class="title-back text-center my-4">Liste des formations</h2>
+        <hr class="separator">
 
-    <div class="admin-buttons d-flex justify-content-center gap-3 my-4">
-        <a href="{{ path('admin_theme_add') }}" class="btn btn-primary">Ajouter un Thème</a>
-        <a href="{{ path('admin_course_add') }}" class="btn btn-primary">Ajouter un Cursus</a>
-        <a href="{{ path('admin_lesson_add') }}" class="btn btn-primary">Ajouter une Leçon</a>
-    </div>
-
-    <h2 class="title-back text-center my-4">Liste des formations</h2>
-
-    <div class="container my-5">
-    <div class="row justify-content-center">
-        {% for course in courses %}
-            <div class="col-md-4 mb-4">
-                <!-- Card for each course -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="card-title">{{ course.name }} <small>({{ course.theme.name }})</small></h3>
-                        <p>{{ course.price }} €</p>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            {% for lesson in groupedLessonsByCourse[course.id] %}
-                                <li class="list-group-item">
-                                    <strong>{{ lesson.name }}</strong> : <span>{{ lesson.content|raw }}</span>
-                                    <p class="text-center">{{ lesson.price }} €</p>
-                                </li>
-                            {% endfor %}
-                        </ul>
+        <div class="container my-5">
+        <div class="row justify-content-center">
+            {% for course in courses %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header text-white">
+                            <h3 class="card-title">
+                                {{ course.name }} 
+                                <small>({{ course.theme.name }})</small>
+                            </h3>
+                            <p>{{ course.price }} €</p>
+                            <div class="text-center">
+                                <a href="{{ path('admin_course_edit', { 'id': course.id }) }}" class="btn-custom">Editer le cours</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                {% for lesson in groupedLessonsByCourse[course.id] %}
+                                    <li class="list-group-item">
+                                        <strong>{{ lesson.name }}</strong> : <span>{{ lesson.content|raw }}</span>
+                                        <p class="text-center">{{ lesson.price }} €</p>
+                                        <div class="text-center">
+                                            <a href="{{ path('admin_lesson_edit', { 'id': lesson.id }) }}" class="btn-custom">Editer le leçon</a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
-
 {% endblock %}

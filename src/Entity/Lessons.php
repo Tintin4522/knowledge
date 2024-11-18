@@ -29,6 +29,9 @@ class Lessons
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $learn = null;
+
     /**
      * @var Collection<int, OrderItems>
      */
@@ -174,6 +177,18 @@ class Lessons
                 $lessonCompletion->setLessonId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLearn(): ?string
+    {
+        return $this->learn;
+    }
+
+    public function setLearn(?string $learn): static
+    {
+        $this->learn = $learn;
 
         return $this;
     }

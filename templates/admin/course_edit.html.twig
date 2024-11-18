@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/back_office.css') }}">
+{% endblock %}
+
+{% block title %}Modifier le Cursus{% endblock %}
+
+{% block body %}
+    <div class="form-container mt-5">
+        <h1 class="title-back text-center my-4">Modifier un Cursus</h1>
+        <hr class="separator">
+        {{ form_start(form) }}
+            <div class="mb-3 text-center">
+                {{ form_label(form.name, 'Nom du Cursus') }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
+                {{ form_label(form.price, 'Prix') }}
+                {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
+                {{ form_label(form.theme, 'Rattaché au thème (cliquez-dessus pour les afficher tous et selectionner celui voulu)') }}
+                {{ form_widget(form.theme, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn-custom">Mettre à jour</button>
+            </div>
+        {{ form_end(form) }}
+        <div class="text-center">
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a>
+        </div>
+    </div>
+{% endblock %}

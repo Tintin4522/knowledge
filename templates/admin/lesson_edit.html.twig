@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/back_office.css') }}">
+{% endblock %}
+
+{% block title %}Modifier la Leçon{% endblock %}
+
+{% block body %}
+    <div class="form-container mt-5">
+        <h1 class="title-back text-center my-4">Modifier une Leçon</h1>
+        <hr class="separator">
+        {{ form_start(form) }}
+            <div class="mb-3 text-center">
+                {{ form_label(form.name, 'Nom de la Leçon') }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
+                {{ form_label(form.content, 'Description de la Leçon') }}
+                {{ form_widget(form.content, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
+                {{ form_label(form.courses_id, 'Rattaché au cours (cliquez-dessus pour les afficher tous et selectionner celui voulu)') }}
+                {{ form_widget(form.courses_id, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
+                {{ form_label(form.price, 'Prix de la Leçon (en euros)') }}
+                {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
+                {{ form_label(form.learn, 'Contenu du Cours') }}
+                {{ form_widget(form.learn, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn-custom">Mettre à jour</button>
+            </div>
+        {{ form_end(form) }}
+        <div class='text-center'>
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary mt-3">Retour au Tableau de Bord</a>
+        </div>
+    </div>
+{% endblock %}
