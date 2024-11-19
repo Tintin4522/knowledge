@@ -19,7 +19,10 @@ class OrderItems
 
     #[ORM\ManyToOne(targetEntity: Lessons::class, inversedBy: 'orderItems')]
     #[ORM\JoinColumn(name: "lesson_id", referencedColumnName: "lesson_id", nullable: true)]
-    private ?Lessons $lesson_id = null;
+    private ?Lessons $lesson = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $content = null;
 
     #[ORM\ManyToOne(targetEntity: Courses::class, inversedBy: 'orderItems')]
     #[ORM\JoinColumn(name: "course_id", referencedColumnName: "id", nullable: true)]
@@ -53,12 +56,12 @@ class OrderItems
 
     public function getLesson(): ?Lessons
     {
-        return $this->lesson_id;
+        return $this->lesson;
     }
 
     public function setLesson(?Lessons $lesson): static
     {
-        $this->lesson_id = $lesson;
+        $this->lesson = $lesson;
 
         return $this;
     }
@@ -134,4 +137,17 @@ class OrderItems
     {
         return $this->lessonId;
     }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function setContent(?string $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
 }

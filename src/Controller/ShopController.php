@@ -132,6 +132,7 @@ class ShopController extends AbstractController
                 $cart['lessons'][$id] = [
                     'name' => $lesson->getName(),
                     'price' => $lesson->getPrice(),
+                    'content' => $lesson->getContent(),
                     'quantity' => 1,
                     'lesson' => $lesson,
                 ];
@@ -141,6 +142,7 @@ class ShopController extends AbstractController
                 $cartItem->setItemType('lesson');
                 $cartItem->setPrice($lesson->getPrice());
                 $cartItem->setQuantity(1);  
+                $cartItem->setContent($lesson->getContent());
                 $this->entityManager->persist($cartItem);
                 $this->entityManager->flush();
 

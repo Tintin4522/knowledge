@@ -13,8 +13,7 @@
                 <thead>
                     <tr>
                         <th>Nom</th>
-                        <th>Quantité</th>
-                        <th>Prix Unitaire</th>
+                        <th>Titre de la leçon</th> {# Garde cette colonne pour afficher le contenu des leçons #}
                         <th>Total</th>
                         <th>Actions</th>
                     </tr>
@@ -24,20 +23,21 @@
                         {% for item in items %}
                             <tr>
                                 <td>{{ item.name }}</td>
-                                <td>{{ item.quantity }}</td>
+
+                                {# Afficher content uniquement si item est une leçon #}
+                                {% if type == 'lessons' and item.content is defined %}
+                                    <td>{{ item.content }}</td>
+                                {% else %}
+                                    <td>-</td> {# Afficher "-" si ce n'est pas une leçon ou si content n'est pas défini #}
+                                {% endif %}
+                                
                                 <td>{{ item.price }}€</td>
-                                <td>{{ item.price * item.quantity }}€</td>
                                 <td>
-                                    {% for courseId, course in cart['courses'] %}
-                                        <div>{{ course.name }} - {{ course.price }}</div>
-                                        {% if course['order_item_id'] is defined %}
-                                            <td>
-                                                <a href="{{ path('cart_remove', { 'id': item['order_item_id'] }) }}" class="btn btn-danger">Supprimer</a>
-                                            </td>
-                                        {% else %}
-                                            <p>Supprimer non disponible</p>
-                                        {% endif %}
-                                    {% endfor %}
+                                    {% if item['order_item_id'] is defined %}
+                                        <a href="{{ path('cart_remove', { 'id': item['order_item_id'] }) }}" class="btn btn-danger">Supprimer</a>
+                                    {% else %}
+                                        <p>Supprimer non disponible</p>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
