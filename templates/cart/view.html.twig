@@ -28,7 +28,16 @@
                                 <td>{{ item.price }}€</td>
                                 <td>{{ item.price * item.quantity }}€</td>
                                 <td>
-                                    <a href="{{ path('cart_remove', { 'type': type, 'id': item.id }) }}" class="btn btn-danger">Supprimer</a>
+                                    {% for courseId, course in cart['courses'] %}
+                                        <div>{{ course.name }} - {{ course.price }}</div>
+                                        {% if course['order_item_id'] is defined %}
+                                            <td>
+                                                <a href="{{ path('cart_remove', { 'id': item['order_item_id'] }) }}" class="btn btn-danger">Supprimer</a>
+                                            </td>
+                                        {% else %}
+                                            <p>Supprimer non disponible</p>
+                                        {% endif %}
+                                    {% endfor %}
                                 </td>
                             </tr>
                         {% endfor %}
@@ -38,7 +47,7 @@
 
             <div class="d-flex justify-content-between mt-4">
                 <h3>Total : {{ total }}€</h3>
-                <a href="#" class="btn btn-success">Passer à la caisse</a>
+                <a href="{{ path('shop_checkout') }}" class="btn btn-success">Passer à la caisse</a>
             </div>
         {% endif %}
     </div>

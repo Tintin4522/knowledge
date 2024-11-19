@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\OrderItemsRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderItemsRepository::class)]
@@ -13,10 +14,6 @@ class OrderItems
     #[ORM\Column]
     private ?int $order_item_id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'orderItems')]
-    #[ORM\JoinColumn(name: "order_id", referencedColumnName: "order_id", nullable: false)]
-    private ?Order $order_id = null;
-
     #[ORM\Column(length: 20)]
     private ?string $item_type = null;
 
@@ -24,33 +21,22 @@ class OrderItems
     #[ORM\JoinColumn(name: "lesson_id", referencedColumnName: "lesson_id", nullable: true)]
     private ?Lessons $lesson_id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'orderItems')]
+    #[ORM\ManyToOne(targetEntity: Courses::class, inversedBy: 'orderItems')]
+    #[ORM\JoinColumn(name: "course_id", referencedColumnName: "id", nullable: true)]
     private ?Courses $course = null;
 
     #[ORM\Column]
     private ?int $quantity = null;
 
-    #[ORM\Column]
-    private ?float $price = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $price = null;
 
-    #[ORM\Column]
-    private ?float $total = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
+    private ?string $total = "0.00";
 
     public function getId(): ?int
     {
         return $this->order_item_id;
-    }
-
-    public function getOrder(): ?Order
-    {
-        return $this->order_id;
-    }
-
-    public function setOrder(?Order $order): static
-    {
-        $this->order_id = $order;
-
-        return $this;
     }
 
     public function getItemType(): ?string
@@ -96,8 +82,7 @@ class OrderItems
 
     public function setQuantity(int $quantity): static
     {
-        $this->quantity = $quantity;
-
+        $this->quantity = $quantity; 
         return $this;
     }
 
@@ -113,15 +98,40 @@ class OrderItems
         return $this;
     }
 
-    public function getTotal(): ?float
+    public function getTotal(): ?string
     {
         return $this->total;
     }
 
-    public function setTotal(float $total): static
+    public function setTotal(float $total): self
     {
         $this->total = $total;
 
         return $this;
+    }
+
+    private $courseId;
+    private $lessonId;
+
+    public function setCourseId($courseId): self
+    {
+        $this->courseId = $courseId;
+        return $this;
+    }
+
+    public function getCourseId()
+    {
+        return $this->courseId;
+    }
+
+    public function setLessonId($lessonId): self
+    {
+        $this->lessonId = $lessonId;
+        return $this;
+    }
+
+    public function getLessonId()
+    {
+        return $this->lessonId;
     }
 }

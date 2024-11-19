@@ -13,6 +13,10 @@
         <hr class="separator">
         {{ form_start(form) }}
             <div class="mb-3 text-center">
+                {{ form_label(form.theme, 'Rattaché au thème (cliquez-dessus pour les afficher tous et selectionner celui voulu)') }}
+                {{ form_widget(form.theme, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3 text-center">
                 {{ form_label(form.name, 'Nom du Cursus') }}
                 {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
             </div>
@@ -20,10 +24,7 @@
                 {{ form_label(form.price, 'Prix') }}
                 {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
             </div>
-            <div class="mb-3 text-center">
-                {{ form_label(form.theme, 'Rattaché au thème (cliquez-dessus pour les afficher tous et selectionner celui voulu)') }}
-                {{ form_widget(form.theme, {'attr': {'class': 'form-control'}}) }}
-            </div>
+
             <div class="text-center">
                 <button type="submit" class="btn-custom">Mettre à jour</button>
             </div>

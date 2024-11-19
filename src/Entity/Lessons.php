@@ -44,10 +44,17 @@ class Lessons
     #[ORM\OneToMany(targetEntity: LessonCompletion::class, mappedBy: 'lesson', orphanRemoval: true)]
     private Collection $lessonCompletions;
 
+    /**
+     * @var Collection<int, UserLessons>
+     */
+    #[ORM\OneToMany(targetEntity: UserLessons::class, mappedBy: 'lesson_id', orphanRemoval: true)]
+    private Collection $userLessons;
+
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
         $this->lessonCompletions = new ArrayCollection();
+        $this->userLessons = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,6 +196,36 @@ class Lessons
     public function setLearn(?string $learn): static
     {
         $this->learn = $learn;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserLessons>
+     */
+    public function getUserLessons(): Collection
+    {
+        return $this->userLessons;
+    }
+
+    public function addUserLesson(UserLessons $userLesson): static
+    {
+        if (!$this->userLessons->contains($userLesson)) {
+            $this->userLessons->add($userLesson);
+            $userLesson->setLessonId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserLesson(UserLessons $userLesson): static
+    {
+        if ($this->userLessons->removeElement($userLesson)) {
+            // set the owning side to null (unless already changed)
+            if ($userLesson->getLessonId() === $this) {
+                $userLesson->setLessonId(null);
+            }
+        }
 
         return $this;
     }

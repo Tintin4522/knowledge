@@ -16,6 +16,11 @@
 
                 {{ form_start(form) }}
                     <div class="mb-3 text-center">
+                        {{ form_label(form.courses_id, 'Rattaché au cours (cliquez-dessus pour les afficher tous et selectionner celui voulu)') }}
+                        {{ form_widget(form.courses_id, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+
+                    <div class="mb-3 text-center">
                         {{ form_label(form.name, 'N° de leçon') }}
                         {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Leçon N°'}}) }}
                     </div>
@@ -30,10 +35,7 @@
                         {{ form_widget(form.content, {'attr': {'class': 'form-control'}}) }}
                     </div>
 
-                    <div class="mb-3 text-center">
-                        {{ form_label(form.courses_id, 'Rattaché au cours (cliquez-dessus pour les afficher tous et selectionner celui voulu)') }}
-                        {{ form_widget(form.courses_id, {'attr': {'class': 'form-control'}}) }}
-                    </div>
+
 
                     <div class="mb-3 text-center">
                         {{ form_label(form.learn, 'Contenu du cours') }}

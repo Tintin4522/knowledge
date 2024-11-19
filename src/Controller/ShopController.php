@@ -67,7 +67,7 @@ class ShopController extends AbstractController
 
         // Créer un article de commande pour chaque produit acheté
         $orderItem = new OrderItems();
-        $orderItem->setOrder($order);
+
 
         // Ajouter le produit à l'article de commande en fonction de son type
         if ($type === 'course') {
@@ -93,34 +93,65 @@ class ShopController extends AbstractController
         return $this->redirectToRoute('shop_index');
     }
 
-        #[Route('/shop/add/{type}/{id}', name: 'shop_add_to_cart')]
+    #[Route('/shop/add/{type}/{id}', name: 'shop_add_to_cart')]
     public function addToCart($type, $id, SessionInterface $session)
     {
+        $user = $this->getUser();
+        if (!$user) {
+            // Si l'utilisateur n'est pas connecté, rediriger vers la page de login
+            return $this->redirectToRoute('login');
+        }
+    
         $cart = $session->get('cart', []);  // Récupère le panier (ou un tableau vide si aucun panier)
         
         if ($type === 'course') {
             $course = $this->entityManager->getRepository(Courses::class)->find($id);
             // Ajouter le cursus au panier
-            $cart['courses'][$id] = [
-                'name' => $course->getName(),
-                'price' => $course->getPrice(),
-                'quantity' => 1,
-            ];
+            if ($course) {
+                $cart['courses'][$id] = [
+                    'name' => $course->getName(),
+                    'price' => $course->getPrice(),
+                    'quantity' => 1,
+                    'course' => $course,
+                ];
+
+                $cartItem = new OrderItems();
+                $cartItem->setCourse($course);
+                $cartItem->setItemType('course');
+                $cartItem->setPrice($course->getPrice());
+                $cartItem->setQuantity(1); 
+                $this->entityManager->persist($cartItem);
+                $this->entityManager->flush();
+
+                $cart['courses'][$id]['order_item_id'] = $cartItem->getId();
+            }
         } elseif ($type === 'lesson') {
             $lesson = $this->entityManager->getRepository(Lessons::class)->find($id);
             // Ajouter la leçon au panier
-            $cart['lessons'][$id] = [
-                'name' => $lesson->getName(),
-                'price' => $lesson->getPrice(),
-                'quantity' => 1,
-            ];
-        }
+            if ($lesson) {
+                $cart['lessons'][$id] = [
+                    'name' => $lesson->getName(),
+                    'price' => $lesson->getPrice(),
+                    'quantity' => 1,
+                    'lesson' => $lesson,
+                ];
 
+                $cartItem = new OrderItems();
+                $cartItem->setLesson($lesson);
+                $cartItem->setItemType('lesson');
+                $cartItem->setPrice($lesson->getPrice());
+                $cartItem->setQuantity(1);  
+                $this->entityManager->persist($cartItem);
+                $this->entityManager->flush();
+
+                $cart['lessons'][$id]['order_item_id'] = $cartItem->getId();
+            }
+        }
+    
         // Sauvegarder le panier dans la session
         $session->set('cart', $cart);
         
         // Rediriger vers la boutique ou la page de paiement
-        return $this->redirectToRoute('shop_boutique');
+        return $this->redirectToRoute('cart_view');
     }
-
 }

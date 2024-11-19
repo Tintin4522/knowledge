@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center">Boutique</h1>
+        <h1 class="text-center">Les cours proposés</h1>
 
         <div class="row mt-5">
             <div class="col-12">
@@ -15,7 +15,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{ course.name }}</h5>
                                     <p><strong>Prix du cursus : {{ course.price }}€</strong></p>
-                                    <a href="{{ path('cart_add', { 'type': 'course', 'id': course.id }) }}" class="btn btn-primary">Acheter le Cursus</a>
+                                    <a href="{{ path('shop_add_to_cart', { 'type': 'course', 'id': course.id }) }}" class="btn btn-primary">Acheter le Cursus</a>
 
                                     <h6 class="mt-4">Leçons incluses :</h6>
                                     <ul class="list-group">
@@ -24,7 +24,7 @@
                                                 <p>{{ lesson.name }}</p>
                                                 <p>{{ lesson.content }}</p>
                                                 <p><strong>Prix du cursus : {{ lesson.price }}€</strong></p>
-                                                <a href="{{ path('cart_add', { 'type': 'lesson', 'id': lesson.id }) }}" class="btn btn-outline-primary btn-sm">Ajouter au panier</a>
+                                                <a href="{{ path('shop_add_to_cart', { 'type': 'lesson', 'id': lesson.id }) }}" class="btn btn-outline-primary btn-sm">Ajouter au panier</a>
                                             </li>
                                         {% endfor %}
                                     </ul>

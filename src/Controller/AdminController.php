@@ -36,8 +36,18 @@ class AdminController extends AbstractController
     
         // Regroupe les leçons par cursus
         foreach ($lessons as $lesson) {
-            $courseId = $lesson->getCourse()->getId();  // Récupère l'ID du cursus lié à cette leçon
-            $groupedLessonsByCourse[$courseId][] = $lesson;
+            $courseId = $lesson->getCourse()->getId();  // Récupère l'ID du cours
+            if (!isset($groupedLessonsByCourse[$courseId])) {
+                $groupedLessonsByCourse[$courseId] = [];  // Initialiser la clé si elle n'existe pas
+            }
+            $groupedLessonsByCourse[$courseId][] = $lesson;  // Ajoute la leçon au tableau du cours
+        }
+        
+        // Vérifie si un cours a des leçons, si ce n'est pas le cas, assigne une valeur vide
+        foreach ($courses as $course) {
+            if (!isset($groupedLessonsByCourse[$course->getId()])) {
+                $groupedLessonsByCourse[$course->getId()] = [];  // Assure-toi que la clé existe même sans leçons
+            }
         }
     
         return $this->render('admin/dashboard.html.twig', [
@@ -139,4 +149,39 @@ class AdminController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route("/course/delete/{id}", name:"admin_course_delete")]
+    public function deleteCourse($id)
+    {
+        $course = $this->entityManager->getRepository(Courses::class)->find($id);
+
+        if (!$course) {
+            throw $this->createNotFoundException('Cours introuvable.');
+        }
+
+        // Supprimer le cours
+        $this->entityManager->remove($course);
+        $this->entityManager->flush();
+
+        // Rediriger vers la page de gestion des cours
+        return $this->redirectToRoute('admin_dashboard');
+    }
+
+    #[Route("/lesson/delete/{id}", name:"admin_lesson_delete")]
+    public function deleteLesson($id)
+    {
+        $lesson = $this->entityManager->getRepository(Lessons::class)->find($id);
+
+        if (!$lesson) {
+            throw $this->createNotFoundException('Leçon introuvable.');
+        }
+
+        // Supprimer la leçon
+        $this->entityManager->remove($lesson);
+        $this->entityManager->flush();
+
+        // Rediriger vers la page de gestion des leçons
+        return $this->redirectToRoute('admin_dashboard');
+    }
+
 }

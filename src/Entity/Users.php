@@ -68,11 +68,25 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    /**
+     * @var Collection<int, UserCourses>
+     */
+    #[ORM\OneToMany(targetEntity: UserCourses::class, mappedBy: 'user_id', orphanRemoval: true)]
+    private Collection $userCourses;
+
+    /**
+     * @var Collection<int, UserLessons>
+     */
+    #[ORM\OneToMany(targetEntity: UserLessons::class, mappedBy: 'user_id', orphanRemoval: true)]
+    private Collection $userLessons;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->certifications = new ArrayCollection();
         $this->lessonCompletions = new ArrayCollection();
+        $this->userCourses = new ArrayCollection();
+        $this->userLessons = new ArrayCollection();
     }
 
     public function getUserId(): ?int
@@ -309,6 +323,66 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserCourses>
+     */
+    public function getUserCourses(): Collection
+    {
+        return $this->userCourses;
+    }
+
+    public function addUserCourse(UserCourses $userCourse): static
+    {
+        if (!$this->userCourses->contains($userCourse)) {
+            $this->userCourses->add($userCourse);
+            $userCourse->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserCourse(UserCourses $userCourse): static
+    {
+        if ($this->userCourses->removeElement($userCourse)) {
+            // set the owning side to null (unless already changed)
+            if ($userCourse->getUserId() === $this) {
+                $userCourse->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserLessons>
+     */
+    public function getUserLessons(): Collection
+    {
+        return $this->userLessons;
+    }
+
+    public function addUserLesson(UserLessons $userLesson): static
+    {
+        if (!$this->userLessons->contains($userLesson)) {
+            $this->userLessons->add($userLesson);
+            $userLesson->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserLesson(UserLessons $userLesson): static
+    {
+        if ($this->userLessons->removeElement($userLesson)) {
+            // set the owning side to null (unless already changed)
+            if ($userLesson->getUserId() === $this) {
+                $userLesson->setUserId(null);
+            }
+        }
 
         return $this;
     }

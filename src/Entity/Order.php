@@ -86,26 +86,4 @@ class Order
     {
         return $this->orderItems;
     }
-
-    public function addOrderItem(OrderItems $orderItem): static
-    {
-        if (!$this->orderItems->contains($orderItem)) {
-            $this->orderItems->add($orderItem);
-            $orderItem->setOrder($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrderItem(OrderItems $orderItem): static
-    {
-        if ($this->orderItems->removeElement($orderItem)) {
-            // set the owning side to null (unless already changed)
-            if ($orderItem->getOrder() === $this) {
-                $orderItem->setOrder(null);
-            }
-        }
-
-        return $this;
-    }
 }
