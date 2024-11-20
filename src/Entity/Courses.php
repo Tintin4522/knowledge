@@ -37,10 +37,17 @@ class Courses
     #[ORM\OneToMany(targetEntity: OrderItems::class, mappedBy: 'course_id')]
     private Collection $orderItems;
 
+    /**
+     * @var Collection<int, CourseCompletion>
+     */
+    #[ORM\OneToMany(targetEntity: CourseCompletion::class, mappedBy: 'course', orphanRemoval: true)]
+    private Collection $courseCompletions;
+
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
         $this->orderItems = new ArrayCollection();
+        $this->courseCompletions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -138,6 +145,36 @@ class Courses
             // set the owning side to null (unless already changed)
             if ($orderItem->getCourse() === $this) {
                 $orderItem->setCourse(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CourseCompletion>
+     */
+    public function getCourseCompletions(): Collection
+    {
+        return $this->courseCompletions;
+    }
+
+    public function addCourseCompletion(CourseCompletion $courseCompletion): static
+    {
+        if (!$this->courseCompletions->contains($courseCompletion)) {
+            $this->courseCompletions->add($courseCompletion);
+            $courseCompletion->setCourseId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCourseCompletion(CourseCompletion $courseCompletion): static
+    {
+        if ($this->courseCompletions->removeElement($courseCompletion)) {
+            // set the owning side to null (unless already changed)
+            if ($courseCompletion->getCourse() === $this) {
+                $courseCompletion->setCourseId(null);
             }
         }
 

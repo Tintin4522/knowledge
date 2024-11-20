@@ -39,10 +39,6 @@ header {
     margin-top: -5px; 
 }
 
-.container {
-    margin-top: 3%;
-}
-
 .title-back {
     color: #00497c;
 }
@@ -56,3 +52,33 @@ header {
 .btn-follow:hover {
     color: #00497c !important;
 }
+
+h1 {
+    font-size: 2.5rem;           
+    color: #0074c7;    
+    margin-bottom: 2rem;             
+}
+
+h2,h3 {
+    font-size: 2rem;             
+    color: #00497c;                 
+    margin-top: 20px;
+    margin-bottom: 2rem;           
+}
+
+p, ul, li {
+    font-size: 1rem;             
+    color: #384050;               
+    line-height: 1.5;            
+    margin-top: 10px;  
+    margin-bottom: 2rem;          
+}
+
+.container {
+    margin: 3rem auto;              
+    padding: 20px;               
+    background-color: #f1f8fc;  
+    border-radius: 15px;      
+    box-shadow: 0 2px 15px #0074c7; 
+}
+

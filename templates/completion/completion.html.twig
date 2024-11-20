@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avancement{% endblock %}
+
+{% block body %}
+<div class="container mt-5 mb-5 text-center">
+    <h1>Tableau des réussites</h1>
+
+    <h2 class="mt-5">Les Leçons</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Leçon</th>
+                <th>Titre</th>
+                <th>Complété</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for completion in lessonCompletions %}
+                <tr>
+                    <td>{{ completion.getLessonId().name }}</td>
+                    <td>{{ completion.getLessonId().content ? completion.getLessonId().content : 'Aucun contenu disponible' }}</td>
+                    <td>{{ completion.isCompleted ? 'Oui' : 'Non' }}</td>
+                    <td>
+                        <a href="{{ path('follow_lesson', { 'id': completion.getLessonId().id }) }}" class="btn btn-follow btn-sm">Suivre la Leçon</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="mt-5">Les cours</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Cursus</th>
+                <th>Complété</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for completion in courseCompletions %}
+                <tr>
+                    <td>{{ completion.getCourse().name }}</td>
+                    <td>{{ completion.isCompleted ? 'Oui' : 'Non' }}</td>
+                    <td>
+                        <a href="{{ path('follow_course', { 'id': completion.getCourse().id }) }}" class="btn btn-follow btn-sm">Suivre le Cursus</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

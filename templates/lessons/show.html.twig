@@ -3,13 +3,18 @@
 {% block title %}Suivre la Leçon: {{ lesson.name }}{% endblock %}
 
 {% block body %}
-<div class="container text-center mt-5">
+<div class="container text-center mt-5 mb-5">
     <h2>{{ lesson.name }}</h2>
 
     <h3 class="mt-4">{{ lesson.content|default('Aucun contenu disponible pour cette leçon.') }}</h3>
 
-    <h3 class="mt-4">Votre cour</h3>
     <p>{{ lesson.learn|default('Aucune leçon enregistrée.') }}</p>
+
+    <form action="{{ path('complete_lesson', {'lessonId': lesson.id}) }}" method="POST">
+        <button type="submit" class="btn btn-follow mt-4">
+            Marquer cette leçon comme terminée
+        </button>
+    </form>
 
     <a href="{{ path('shop_index') }}" class="btn btn-secondary mt-4">Retour à la boutique</a>
 </div>

@@ -51,3 +51,9 @@
     background-color: #82b864;
     transform: translateY(-2px);
 }
+
+.card {
+    background-color: #f1f8fc;
+    border: none;
+    box-shadow: 0 2px 20px #0074c7;
+}

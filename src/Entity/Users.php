@@ -68,12 +68,19 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    /**
+     * @var Collection<int, CourseCompletion>
+     */
+    #[ORM\OneToMany(targetEntity: CourseCompletion::class, mappedBy: 'user')]
+    private Collection $courseCompletions;
+
 
     public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->certifications = new ArrayCollection();
         $this->lessonCompletions = new ArrayCollection();
+        $this->courseCompletions = new ArrayCollection();
     }
 
     public function getUserId(): ?int
@@ -310,6 +317,36 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CourseCompletion>
+     */
+    public function getCourseCompletions(): Collection
+    {
+        return $this->courseCompletions;
+    }
+
+    public function addCourseCompletion(CourseCompletion $courseCompletion): static
+    {
+        if (!$this->courseCompletions->contains($courseCompletion)) {
+            $this->courseCompletions->add($courseCompletion);
+            $courseCompletion->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCourseCompletion(CourseCompletion $courseCompletion): static
+    {
+        if ($this->courseCompletions->removeElement($courseCompletion)) {
+            // set the owning side to null (unless already changed)
+            if ($courseCompletion->getUserId() === $this) {
+                $courseCompletion->setUserId(null);
+            }
+        }
 
         return $this;
     }

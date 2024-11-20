@@ -35,6 +35,9 @@
                                 <a class="nav-link" href="{{ path('shop_index') }}">Cours</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ path('completion_list') }}">Avancement</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ path('cart_view') }}">Panier</a>
                             </li>
                             {% if is_granted('ROLE_ADMIN') %}
@@ -61,7 +64,7 @@
             </nav>
         </header>
         <main>
-            <div class="container">
+            <div>
                 {% block body %}{% endblock %}
             </div>
         </main>
