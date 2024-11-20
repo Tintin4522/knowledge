@@ -20,6 +20,7 @@
                                 <div class="card-body">
                                     <h5 class="card-title">{{ course.name }}</h5>
                                     <p><strong>Prix du cursus : {{ course.price }}€</strong></p>
+                                    
                                     <a href="{{ purchasedCourses is defined and course.id in purchasedCourses 
                                         ? path('follow_course', { 'id': course.id }) 
                                         : path('shop_add_to_cart', { 'type': 'course', 'id': course.id }) }}" 
@@ -33,12 +34,14 @@
                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                 <p>{{ lesson.name }}</p>
                                                 <p>{{ lesson.content }}</p>
-                                                <p><strong>Prix du cursus : {{ lesson.price }}€</strong></p>
-                                                <a href="{{ purchasedLessons is defined and lesson.id in purchasedLessons 
+                                                <p><strong>Prix de la leçon : {{ lesson.price }}€</strong></p>
+                                                
+                                                {# Vérification si l'utilisateur a acheté la leçon ou si le cursus a été acheté #}
+                                                <a href="{{ (course.id in purchasedCourses) or (purchasedLessons is defined and lesson.id in purchasedLessons)
                                                     ? path('follow_lesson', { 'id': lesson.id }) 
                                                     : path('shop_add_to_cart', { 'type': 'lesson', 'id': lesson.id }) }}" 
-                                                    class="btn {{ lesson.id in purchasedLessons ? 'btn-follow' : 'btn-outline-primary btn-sm' }}">
-                                                    {{ lesson.id in purchasedLessons ? 'Suivre la Leçon' : 'Acheter la Leçon' }}
+                                                    class="btn {{ (course.id in purchasedCourses) or (lesson.id in purchasedLessons) ? 'btn-follow' : 'btn-outline-primary btn-sm' }}">
+                                                    {{ (course.id in purchasedCourses) or (lesson.id in purchasedLessons) ? 'Suivre la Leçon' : 'Acheter la Leçon' }}
                                                 </a>
                                             </li>
                                         {% endfor %}

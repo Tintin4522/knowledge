@@ -95,8 +95,7 @@ class CartController extends AbstractController
         // Créer une nouvelle commande
         $order = new Order();
         $order->setUserId($user);
-        $order->setCreatedAt(new \DateTimeImmutable());
-        $order->setTotalAmount($totalFormatted);  // Assurez-vous que le total est bien défini
+        $order->setCreatedAt(new \DateTimeImmutable()); // Assurez-vous que le total est bien défini
     
         // Ajouter les articles du panier à la commande
         foreach ($cart as $type => $items) {

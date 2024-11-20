@@ -9,7 +9,7 @@
     <h3 class="mt-4">{{ lesson.content|default('Aucun contenu disponible pour cette leçon.') }}</h3>
 
     <h3 class="mt-4">Votre cour</h3>
-    <p>{{ lesson.learn|default('Aucune information sur les apprentissages.') }}</p>
+    <p>{{ lesson.learn|default('Aucune leçon enregistrée.') }}</p>
 
     <a href="{{ path('shop_index') }}" class="btn btn-secondary mt-4">Retour à la boutique</a>
 </div>

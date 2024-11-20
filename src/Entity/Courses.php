@@ -37,17 +37,10 @@ class Courses
     #[ORM\OneToMany(targetEntity: OrderItems::class, mappedBy: 'course_id')]
     private Collection $orderItems;
 
-    /**
-     * @var Collection<int, UserCourses>
-     */
-    #[ORM\OneToMany(targetEntity: UserCourses::class, mappedBy: 'course_id', orphanRemoval: true)]
-    private Collection $userCourses;
-
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
         $this->orderItems = new ArrayCollection();
-        $this->userCourses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -151,33 +144,4 @@ class Courses
         return $this;
     }
 
-    /**
-     * @return Collection<int, UserCourses>
-     */
-    public function getUserCourses(): Collection
-    {
-        return $this->userCourses;
-    }
-
-    public function addUserCourse(UserCourses $userCourse): static
-    {
-        if (!$this->userCourses->contains($userCourse)) {
-            $this->userCourses->add($userCourse);
-            $userCourse->setCourseId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserCourse(UserCourses $userCourse): static
-    {
-        if ($this->userCourses->removeElement($userCourse)) {
-            // set the owning side to null (unless already changed)
-            if ($userCourse->getCourseId() === $this) {
-                $userCourse->setCourseId(null);
-            }
-        }
-
-        return $this;
-    }
 }

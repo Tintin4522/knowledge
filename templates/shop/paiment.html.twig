@@ -1,30 +1,78 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement Stripe</title>
-    <script src="https://js.stripe.com/v3/"></script>
-</head>
-<body>
-    <div class="text-center">
-        <h1>Page de paiement</h1>
-        <button id="checkout-button">Payer avec Stripe</button>
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement Stripe{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .container-paiement {
+            max-width: 500px;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px #0074c7;
+        }
+
+        .logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #0074c7;
+        }
+
+        #checkout-button {
+            background-color: #82b864;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #checkout-button:hover {
+            background-color: #557a41;
+        }
+
+        .alert {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="container-paiement text-center">
+            <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" class="logo">
+
+            <p>Procédez au paiement sécurisé via Stripe pour finaliser votre achat.</p>
+
+            <button id="checkout-button" class="btn btn-primary w-100">
+                Payer avec Stripe
+            </button>
+            <a href="{{ path('cart_view') }}" class="btn btn-secondary mt-4">Retour à la boutique</a>
+
+            <div class="alert" id="error-message"></div>
+        </div>
     </div>
 
-    <script type="text/javascript">
-        var stripe = Stripe('pk_test_oKhSR5nslBRnBZpjO6KuzZeX');  // Remplacez par votre clé publique Stripe
-        var checkoutButton = document.getElementById('checkout-button');
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('pk_test_oKhSR5nslBRnBZpjO6KuzZeX'); 
+    var checkoutButton = document.getElementById('checkout-button');
 
-        checkoutButton.addEventListener('click', function () {
-            // Créer la session Stripe avec le sessionId passé depuis Symfony
-            stripe.redirectToCheckout({ sessionId: '{{ sessionId }}' })
-                .then(function (result) {
-                    if (result.error) {
-                        alert(result.error.message);
-                    }
-                });
-        });
-    </script>
-</body>
-</html>
+    checkoutButton.addEventListener('click', function () {
+        stripe.redirectToCheckout({ sessionId: '{{ sessionId }}' })
+            .then(function (result) {
+                if (result.error) {
+                    document.getElementById('error-message').textContent = result.error.message;
+                }
+            });
+    });
+</script>
+{% endblock %}
