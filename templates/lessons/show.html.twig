@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivre la Leçon: {{ lesson.name }}{% endblock %}
+
+{% block body %}
+<div class="container text-center mt-5">
+    <h2>{{ lesson.name }}</h2>
+
+    <h3 class="mt-4">{{ lesson.content|default('Aucun contenu disponible pour cette leçon.') }}</h3>
+
+    <h3 class="mt-4">Votre cour</h3>
+    <p>{{ lesson.learn|default('Aucune information sur les apprentissages.') }}</p>
+
+    <a href="{{ path('shop_index') }}" class="btn btn-secondary mt-4">Retour à la boutique</a>
+</div>
+{% endblock %}

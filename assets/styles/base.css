@@ -46,3 +46,13 @@ header {
 .title-back {
     color: #00497c;
 }
+
+.btn-follow {
+    background-color: #82b864 !important;
+    border-color: #82b864 !important;
+    color: white !important;
+}
+
+.btn-follow:hover {
+    color: #00497c !important;
+}

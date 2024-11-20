@@ -26,16 +26,37 @@ class ShopController extends AbstractController
     }
 
     #[Route('/shop', name: 'shop_index')]
-    public function index(CoursesRepository $coursesRepo, LessonsRepository $lessonsRepo): Response
-    {
-        $courses = $coursesRepo->findAll();  // Récupère tous les cursus
-        $lessons = $lessonsRepo->findAll();  // Récupère toutes les leçons
-
+    public function index(CoursesRepository $coursesRepo, LessonsRepository $lessonsRepo, EntityManagerInterface $entityManager): Response {
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+    
+        // Récupérer tous les cursus et leçons
+        $courses = $coursesRepo->findAll();
+        $lessons = $lessonsRepo->findAll();
+    
+        // Récupérer les commandes de l'utilisateur
+        $orderRepo = $entityManager->getRepository(Order::class);
+        $purchasedItems = $orderRepo->findBy(['user_id' => $user]);
+    
+        // Extraire les IDs des cursus et leçons achetés
+        $purchasedCourses = [];
+        $purchasedLessons = [];
+        foreach ($purchasedItems as $item) {
+            if ($item->getItemType() === 'course' && $item->getCourseId()) {
+                $purchasedCourses[] = $item->getCourseId();
+            } elseif ($item->getItemType() === 'lesson' && $item->getLessonId()) {
+                $purchasedLessons[] = $item->getLessonId();
+            }
+        }
+    
         return $this->render('shop/shop.html.twig', [
             'courses' => $courses,
             'lessons' => $lessons,
+            'purchasedCourses' => $purchasedCourses,
+            'purchasedLessons' => $purchasedLessons,
         ]);
     }
+    
 
     #[Route('/shop/acheter/{type}/{id}', name: 'shop_buy')]
     public function buy(
@@ -155,4 +176,26 @@ class ShopController extends AbstractController
         // Rediriger vers la boutique ou la page de paiement
         return $this->redirectToRoute('cart_view');
     }
+
+    #[Route('/course/{id}/follow', name: 'follow_course')]
+    public function followCourse(Courses $course): Response
+    {
+        return $this->render('courses/show.html.twig', [
+            'course' => $course,
+        ]);
+    }
+
+    #[Route('/lesson/{id}/follow', name: 'follow_lesson', requirements: ['id' => '\d+'])]
+    public function followLesson(Lessons $lesson = null): Response
+    {
+        if (!$lesson) {
+            throw $this->createNotFoundException('La leçon demandée est introuvable.');
+        }
+    
+        return $this->render('lessons/show.html.twig', [
+            'lesson' => $lesson,
+        ]);
+    }
+    
+
 }
