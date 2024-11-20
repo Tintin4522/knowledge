@@ -12,10 +12,10 @@
             <table class="table table-bordered mt-4">
                 <thead>
                     <tr>
-                        <th>Nom</th>
-                        <th>Titre de la leçon</th> {# Garde cette colonne pour afficher le contenu des leçons #}
-                        <th>Total</th>
-                        <th>Actions</th>
+                        <th class="text-center">Nom</th>
+                        <th class="text-center">Titre de la leçon</th> {# Garde cette colonne pour afficher le contenu des leçons #}
+                        <th class="text-center">Prix</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,11 +28,11 @@
                                 {% if type == 'lessons' and item.content is defined %}
                                     <td>{{ item.content }}</td>
                                 {% else %}
-                                    <td>-</td> {# Afficher "-" si ce n'est pas une leçon ou si content n'est pas défini #}
+                                    <td>Module complet</td> {# Afficher "-" si ce n'est pas une leçon ou si content n'est pas défini #}
                                 {% endif %}
                                 
-                                <td>{{ item.price }}€</td>
-                                <td>
+                                <td class="text-center">{{ item.price }}€</td>
+                                <td class="text-center">
                                     {% if item['order_item_id'] is defined %}
                                         <a href="{{ path('cart_remove', { 'id': item['order_item_id'] }) }}" class="btn btn-danger">Supprimer</a>
                                     {% else %}
@@ -47,7 +47,7 @@
 
             <div class="d-flex justify-content-between mt-4">
                 <h3>Total : {{ total }}€</h3>
-                <a href="{{ path('shop_checkout') }}" class="btn btn-success">Passer à la caisse</a>
+                <a href="{{ path('cart_checkout') }}" class="btn btn-success">Passer à la caisse</a>
             </div>
         {% endif %}
     </div>

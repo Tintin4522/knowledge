@@ -37,6 +37,10 @@ class OrderItems
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ["default" => 0])]
     private ?string $total = "0.00";
 
+    #[ORM\ManyToOne(targetEntity: Order::class)]
+    #[ORM\JoinColumn(name: "order_id", referencedColumnName: "order_id")]
+    private ?Order $order = null;
+
     public function getId(): ?int
     {
         return $this->order_item_id;
@@ -50,7 +54,6 @@ class OrderItems
     public function setItemType(string $item_type): static
     {
         $this->item_type = $item_type;
-
         return $this;
     }
 
@@ -62,7 +65,6 @@ class OrderItems
     public function setLesson(?Lessons $lesson): static
     {
         $this->lesson = $lesson;
-
         return $this;
     }
 
@@ -74,7 +76,6 @@ class OrderItems
     public function setCourse(?Courses $course): static
     {
         $this->course = $course;
-
         return $this;
     }
 
@@ -97,7 +98,6 @@ class OrderItems
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
         return $this;
     }
 
@@ -109,7 +109,6 @@ class OrderItems
     public function setTotal(float $total): self
     {
         $this->total = $total;
-
         return $this;
     }
 
@@ -146,7 +145,12 @@ class OrderItems
     public function setContent(?string $content): static
     {
         $this->content = $content;
+        return $this;
+    }
 
+    public function setOrderId(Order $order): self
+    {
+        $this->order = $order;
         return $this;
     }
 

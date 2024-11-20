@@ -3,13 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(name: '`order`')]
+#[ORM\Table(name: '`order`')] 
 class Order
 {
     #[ORM\Id]
@@ -21,26 +19,27 @@ class Order
     #[ORM\JoinColumn(nullable: false)]
     private ?Users $user_id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 2, scale: 2)]
-    private ?string $total_amount = null;
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $lesson_id = null;
 
-    /**
-     * @var Collection<int, OrderItems>
-     */
-    #[ORM\OneToMany(targetEntity: OrderItems::class, mappedBy: 'order_id', orphanRemoval: true)]
-    private Collection $orderItems;
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    private ?int $course_id = null;
 
-    public function __construct()
-    {
-        $this->orderItems = new ArrayCollection();
-    }
+    #[ORM\Column(length: 20)]
+    private ?string $item_type = null;
 
     public function getId(): ?int
     {
         return $this->order_id;
+    }
+
+    public function setOrderId(Order $order): self
+    {
+        $this->order_id = $order;
+        return $this;
     }
 
     public function getUserId(): ?Users
@@ -51,7 +50,6 @@ class Order
     public function setUserId(?Users $user_id): static
     {
         $this->user_id = $user_id;
-
         return $this;
     }
 
@@ -63,27 +61,62 @@ class Order
     public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
-
         return $this;
     }
 
-    public function getTotalAmount(): ?string
+    public function getLessonId(): ?int
     {
-        return $this->total_amount;
+        return $this->lesson_id;
     }
 
-    public function setTotalAmount(string $total_amount): static
+    public function setLessonId(?int $lesson_id): self
     {
-        $this->total_amount = $total_amount;
-
+        $this->lesson_id = $lesson_id;
         return $this;
     }
 
-    /**
-     * @return Collection<int, OrderItems>
-     */
-    public function getOrderItems(): Collection
+    public function getCourseId(): ?int
     {
-        return $this->orderItems;
+        return $this->course_id;
+    }
+
+    public function setCourseId(?int $course_id): self
+    {
+        $this->course_id = $course_id;
+        return $this;
+    }
+
+    public function getItemType(): ?string
+    {
+        return $this->item_type;
+    }
+
+    public function setItemType(string $item_type): static
+    {
+        $this->item_type = $item_type;
+        return $this;
+    }
+
+    // Si tu veux gérer les IDs de cours et de leçons directement :
+    public function getCourseIdDirect(): ?int
+    {
+        return $this->course_id;
+    }
+
+    public function setCourseIdDirect(?int $courseId): self
+    {
+        $this->course_id = $courseId;
+        return $this;
+    }
+
+    public function getLessonIdDirect(): ?int
+    {
+        return $this->lesson_id;
+    }
+
+    public function setLessonIdDirect(?int $lessonId): self
+    {
+        $this->lesson_id = $lessonId;
+        return $this;
     }
 }

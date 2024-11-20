@@ -2,122 +2,143 @@
 
 namespace App\Controller;
 
-use App\Entity\UserLessons;
-use App\Entity\UserCourses;
-use App\Entity\Courses;
-use App\Entity\Lessons;
+use App\Entity\Order;
+use App\Entity\OrderItems;
 use Doctrine\ORM\EntityManagerInterface;
-use Stripe\Checkout\Session;
-use Stripe\Stripe;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 class StripeController extends AbstractController
 {
-    private $stripePublicKey;
-    private $stripeSecretKey;
-    private $entityManager;
+    private string $stripeSecretKey;
 
-    public function __construct(ParameterBagInterface $params, EntityManagerInterface $entityManager)
+    public function __construct(string $stripeSecretKey)
     {
-        // Récupérer les clés Stripe depuis le fichier .env
-        $this->stripePublicKey = $params->get('STRIPE_PUBLIC_KEY');
-        $this->stripeSecretKey = $params->get('STRIPE_SECRET_KEY');
-        $this->entityManager = $entityManager;
+        $this->stripeSecretKey = $stripeSecretKey;
     }
 
-    #[Route('/shop/checkout', name: 'shop_checkout')]
-    public function checkout(SessionInterface $session): Response
+    #[Route('/cart/checkout', name: 'cart_checkout')]
+    public function checkout(EntityManagerInterface $em, RequestStack $requestStack): Response
     {
-        // Récupérer le panier depuis la session
+        $user = $this->getUser();
+        $session = $requestStack->getSession();
         $cart = $session->get('cart', []);
-        $lineItems = [];
-
-        // Ajouter les cours du panier à la session Stripe
-        foreach ($cart['courses'] ?? [] as $courseId => $course) {
-            $lineItems[] = [
-                'price_data' => [
-                    'currency' => 'eur',
-                    'product_data' => [
-                        'name' => $course['name'],
-                    ],
-                    'unit_amount' => $course['price'] * 100, // Stripe attend des montants en cents
-                ],
-                'quantity' => 1, // Chaque élément est unique
-            ];
+        
+        if (empty($cart)) {
+            return $this->redirectToRoute('cart');
         }
-
-        // Ajouter les leçons du panier à la session Stripe
-        foreach ($cart['lessons'] ?? [] as $lessonId => $lesson) {
-            $lineItems[] = [
-                'price_data' => [
-                    'currency' => 'eur',
-                    'product_data' => [
-                        'name' => $lesson['name'],
-                    ],
-                    'unit_amount' => $lesson['price'] * 100, // Stripe attend des montants en cents
-                ],
-                'quantity' => 1, // Chaque élément est unique
-            ];
+    
+        // Calcul du total
+        $total = $this->calculateTotal($cart);
+        $totalFormatted = intval($total * 100); // Stripe attend le montant en centimes
+        
+        if ($totalFormatted <= 0) {
+            throw new \Exception('Le total doit être supérieur à zéro.');
         }
-
-        // Initialiser Stripe avec la clé secrète
+    
+        // Initialiser Stripe
         Stripe::setApiKey($this->stripeSecretKey);
-
-        // Créer une session de paiement Stripe
-        $sessionStripe = Session::create([
+    
+        // Créer une session Stripe
+        $checkoutSession = Session::create([
             'payment_method_types' => ['card'],
-            'line_items' => $lineItems,
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => [
+                        'name' => 'Paiement de votre panier',
+                    ],
+                    'unit_amount' => $totalFormatted,
+                ],
+                'quantity' => 1,
+            ]],
             'mode' => 'payment',
-            'success_url' => $this->generateUrl('shop_success', [], 0),
-            'cancel_url' => $this->generateUrl('shop_cancel', [], 0),
+            'success_url' => $this->generateUrl('payment_success', [], 0),
+            'cancel_url' => $this->generateUrl('payment_cancel', [], 0),
         ]);
-
-        // Rediriger l'utilisateur vers la page de paiement Stripe
-        return $this->redirect($sessionStripe->url);
+    
+        // Passer le sessionId à la page de paiement
+        return $this->render('shop/paiment.html.twig', [
+            'sessionId' => $checkoutSession->id
+        ]);
     }
+    
 
-    #[Route('/shop/success', name: 'shop_success')]
-    public function success(SessionInterface $session): Response
+    #[Route('/cart/payment/success', name: 'payment_success')]
+    public function paymentSuccess(EntityManagerInterface $entityManager, RequestStack $requestStack): Response
     {
-        // Récupérer le panier depuis la session
+        $user = $this->getUser();
+        $session = $requestStack->getSession();
         $cart = $session->get('cart', []);
-
-        // Enregistrer les achats dans la base de données
-        foreach ($cart['courses'] ?? [] as $courseId => $course) {
-            $userCourse = new UserCourses();
-            $userCourse->setUserId($this->getUser());
-            $userCourse->setCourseId($this->entityManager->getRepository(Courses::class)->find($courseId));
-            $userCourse->setStatus('paid'); // Statut payé
-            $userCourse->setDateAchat(new \DateTime());
-            $this->entityManager->persist($userCourse);
+    
+        // Vérifie que le panier n'est pas vide
+        if (empty($cart)) {
+            return $this->redirectToRoute('shop_index');
         }
+    
+        // Récupère tous les éléments de OrderItems qui sont dans le panier
+        $orderItemsRepo = $entityManager->getRepository(OrderItems::class);
+        $orderItemsList = $orderItemsRepo->findBy(['order' => null]); // Récupérer les éléments sans commande associée
+    
+        // Créer un Order pour chaque élément de OrderItems
+        foreach ($orderItemsList as $orderItem) {
+            $order = new Order();
+            $order->setUserId($user); // Associe l'utilisateur
+            $order->setCreatedAt(new \DateTimeImmutable()); // Définir la date de création
+    
+            // Copier les informations de OrderItems vers Order
+            $order->setItemType($orderItem->getItemType()); // Copier le type de l'élément (course ou lesson)
+                
+            // Récupérer le lesson_id ou le course_id via les entités associées
+                if ($orderItem->getLesson()) {
+                    $order->setLessonId($orderItem->getLesson()->getId());
+                }
 
-        foreach ($cart['lessons'] ?? [] as $lessonId => $lesson) {
-            $userLesson = new UserLessons();
-            $userLesson->setUserId($this->getUser());
-            $userLesson->setLessonId($this->entityManager->getRepository(Lessons::class)->find($lessonId));
-            $userLesson->setStatus('paid'); // Statut payé
-            $userLesson->setDateAchat(new \DateTime());
-            $this->entityManager->persist($userLesson);
+                if ($orderItem->getCourse()) {
+                    $order->setCourseId($orderItem->getCourse()->getId());
+                }
+    
+            // Persiste la commande dans la base de données
+            $entityManager->persist($order);
+    
+            // Supprime l'élément OrderItem après avoir copié ses données dans Order
+            $entityManager->remove($orderItem);
         }
-
-        // Sauvegarder dans la base de données
-        $this->entityManager->flush();
-
-        // Vider le panier
+    
+        // Finaliser la persistance de toutes les commandes et les suppressions
+        $entityManager->flush();
+    
+        // Vider le panier après la validation du paiement
         $session->remove('cart');
-
-        return $this->render('shop/success.html.twig');
+    
+        // Redirige vers la page de confirmation avec l'ID de la dernière commande créée
+        return $this->redirectToRoute('shop_index', ['orderId' => $order->getId()]);
     }
+    
 
-    #[Route('/shop/cancel', name: 'shop_cancel')]
-    public function cancel(): Response
+    #[Route('/cart/payment/cancel', name: 'payment_cancel')]
+    public function paymentCancel(): Response
     {
         return $this->render('shop/cancel.html.twig');
+    }
+
+    // Fonction de calcul du total
+    private function calculateTotal(array $cart): float
+    {
+        $total = 0;
+
+        foreach ($cart['courses'] ?? [] as $courseId => $course) {
+            $total += $course['price'];  // Le prix de chaque cours
+        }
+        
+        foreach ($cart['lessons'] ?? [] as $lessonId => $lesson) {
+            $total += $lesson['price'];  // Le prix de chaque leçon
+        }
+
+        return $total;
     }
 }

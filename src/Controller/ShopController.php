@@ -59,8 +59,7 @@ class ShopController extends AbstractController
         // Créer une nouvelle commande
         $order = new Order();
         $order->setUserId($user);
-        $order->setCreatedAt(new \DateTimeImmutable());
-        $order->setTotalAmount((string) $product->getPrice());  // Montant total de la commande
+        $order->setCreatedAt(new \DateTimeImmutable());  // Montant total de la commande
 
         $entityManager->persist($order);
         $entityManager->flush();
