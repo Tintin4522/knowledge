@@ -53,7 +53,7 @@ class HomeController extends AbstractController
         } else {
             // Sinon, créer une nouvelle entrée dans LessonCompletion
             $completion = new LessonCompletion();
-            $completion->setUserId($user);
+            $completion->setUser($user);
             $completion->setLessonId($lesson);
             $completion->setCompleted(true);
 
@@ -102,7 +102,7 @@ class HomeController extends AbstractController
         } else {
             // Sinon, créer une nouvelle entrée dans CourseCompletion
             $completion = new CourseCompletion();
-            $completion->setUserId($user);
+            $completion->setUser($user);
             $completion->setCourseId($course);
             $completion->setCompleted(true);
 
@@ -120,15 +120,25 @@ class HomeController extends AbstractController
     #[Route('/completions', name: 'completion_list')]
     public function completion_list(LessonCompletionRepository $lessonCompletionRepository, CourseCompletionRepository $courseCompletionRepository): Response
     {
-        // Récupérer les complétions de leçons de l'utilisateur connecté
-        $lessonCompletions = $lessonCompletionRepository->findBy(['user' => $this->getUser()]);
-    
-        // Récupérer les complétions de cursus de l'utilisateur connecté
-        $courseCompletions = $courseCompletionRepository->findBy(['user' => $this->getUser()]);
-    
+        if ($this->isGranted('ROLE_ADMIN')) {
+            // Si l'utilisateur est admin, charger les données pour tous les utilisateurs
+            $courseCompletions = $courseCompletionRepository->findAll();  // Exemple pour récupérer toutes les complétions de cours
+            $lessonCompletions = $lessonCompletionRepository->findAll();  // Exemple pour récupérer toutes les complétions de leçons
+
+            return $this->render('admin/completion_users.html.twig', [
+                'courseCompletions' => $courseCompletions,
+                'lessonCompletions' => $lessonCompletions,
+            ]);
+        } else {
+            // Si l'utilisateur est un utilisateur normal, charger ses propres données
+            $user = $this->getUser();
+            $courseCompletions = $courseCompletionRepository->findBy(['user' => $user]);
+            $lessonCompletions = $lessonCompletionRepository->findBy(['user' => $user]);
+        }
+
         return $this->render('completion/completion.html.twig', [
-            'lessonCompletions' => $lessonCompletions,
             'courseCompletions' => $courseCompletions,
+            'lessonCompletions' => $lessonCompletions,
         ]);
     }
 }

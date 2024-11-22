@@ -291,7 +291,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->lessonCompletions->contains($lessonCompletion)) {
             $this->lessonCompletions->add($lessonCompletion);
-            $lessonCompletion->setUserId($this);
+            $lessonCompletion->setUser($this);
         }
 
         return $this;
@@ -301,8 +301,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->lessonCompletions->removeElement($lessonCompletion)) {
             // set the owning side to null (unless already changed)
-            if ($lessonCompletion->getUserId() === $this) {
-                $lessonCompletion->setUserId(null);
+            if ($lessonCompletion->getUser() === $this) {
+                $lessonCompletion->setUser(null);
             }
         }
 
@@ -333,7 +333,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->courseCompletions->contains($courseCompletion)) {
             $this->courseCompletions->add($courseCompletion);
-            $courseCompletion->setUserId($this);
+            $courseCompletion->setUser($this);
         }
 
         return $this;
@@ -343,8 +343,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->courseCompletions->removeElement($courseCompletion)) {
             // set the owning side to null (unless already changed)
-            if ($courseCompletion->getUserId() === $this) {
-                $courseCompletion->setUserId(null);
+            if ($courseCompletion->getUser() === $this) {
+                $courseCompletion->setUser(null);
             }
         }
 

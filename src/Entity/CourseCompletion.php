@@ -29,17 +29,17 @@ class CourseCompletion
         return $this->completion_id;
     }
 
-    public function getUserId(): ?Users
+    public function getUser(): ?Users
     {
         return $this->user;
     }
-
-    public function setUserId(?Users $user_id): static
+    
+    public function setUser(?Users $user): static
     {
-        $this->user = $user_id;
-
+        $this->user = $user;
+    
         return $this;
-    }
+    }    
 
     public function getCourse(): ?Courses
     {

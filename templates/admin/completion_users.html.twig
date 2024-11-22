@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avancement Administrateur{% endblock %}
+
+{% block body %}
+<div class="container mt-5 mb-5 text-center">
+    <h1>Tableau de validations utilisateurs</h1>
+
+    <h2 class="mt-5">Les Leçons</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Complété</th>
+                <th>Utilisateur</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for completion in lessonCompletions %}
+                <tr>
+                    <td>{{ completion.getLessonId().content ? completion.getLessonId().content : 'Aucun contenu disponible' }}</td>
+                    <td>{{ completion.isCompleted ? 'Oui' : 'Non' }}</td>
+                    <td>{{ completion.getUser().email }}</td> 
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 class="mt-5">Les Cours</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Cursus</th>
+                <th>Complété</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for completion in courseCompletions %}
+                <tr>
+                    <td>{{ completion.getUser().email }}</td> 
+                    <td>{{ completion.getCourse().name }}</td>
+                    <td>{{ completion.isCompleted ? 'Oui' : 'Non' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
