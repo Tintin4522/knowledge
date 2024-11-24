@@ -1,8 +1,18 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+{% endblock %}
+
 {% block title %}Mon Panier{% endblock %}
 
 {% block body %}
+    <div class="text-center mb-5 mt-5 flash-message">
+        <h2><strong>ATTENTION SITE RÉALISÉ DANS LE CADRE D'UNE FORMATION PROFESSIONNELLE</strong></h2>
+        <p>Ce site n'est pas une entreprise réelle, rien ne peux être acheté.</p>
+        <h3>N'entrez sous aucun prétexte vos données bancaires</h3>
+    </div>
     <div class="container text-center mt-5 mb-5">
         <h1 class="text-center">Mon Panier</h1>
 

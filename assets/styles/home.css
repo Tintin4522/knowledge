@@ -7,3 +7,23 @@
     box-shadow: 0 2px 15px #0074c7; 
 }
 
+.flash-message {
+    width: 80%;
+    margin: 2rem auto;
+    padding: 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    animation: flash 1s infinite alternate;
+}
+
+@keyframes flash {
+    0% {
+        background-color: red;
+        color: white;
+    }
+    100% {
+        background-color: white;
+        color: red;
+        border: 5px solid red;
+    }
+}
