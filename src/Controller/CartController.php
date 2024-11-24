@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_CLIENT')]
 class CartController extends AbstractController
 {
     private $entityManager;
@@ -29,6 +28,10 @@ class CartController extends AbstractController
     #[Route('/cart', name: 'cart_view')]
     public function viewCart(SessionInterface $session)
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         $cart = $session->get('cart', []);
         
         // Calcul du total
@@ -44,6 +47,10 @@ class CartController extends AbstractController
     #[Route('/cart/remove/{id}', name: 'cart_remove')]
     public function removeFromCart($id, SessionInterface $session, EntityManagerInterface $em): Response
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         // Récupérer le panier
         $cart = $session->get('cart', []);
     
@@ -78,6 +85,10 @@ class CartController extends AbstractController
     #[Route('/cart/checkout', name: 'cart_checkout')]
     public function checkout(EntityManagerInterface $em, RequestStack $requestStack): Response
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+        
         $user = $this->getUser();
         $session = $requestStack->getSession();
         $cart = $session->get('cart', []);

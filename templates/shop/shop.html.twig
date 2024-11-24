@@ -21,11 +21,21 @@
                                     <h5 class="card-title">{{ course.name }}</h5>
                                     <p><strong>Prix du cursus : {{ course.price }}€</strong></p>
                                     
-                                    <a href="{{ purchasedCourses is defined and course.id in purchasedCourses 
-                                        ? path('follow_course', { 'id': course.id }) 
-                                        : path('shop_add_to_cart', { 'type': 'course', 'id': course.id }) }}" 
-                                        class="btn {{ course.id in purchasedCourses ? 'btn-follow' : 'btn-primary' }}">
-                                        {{ course.id in purchasedCourses ? 'Suivre le Cursus' : 'Acheter le Cursus' }}
+                                    {# Lien pour suivre ou acheter un cursus #}
+                                    <a href="{{ 
+                                        'ROLE_ADMIN' in userRoles or (course.id in purchasedCourses)
+                                        ? path('follow_course', { 'id': course.id })
+                                        : path('shop_add_to_cart', { 'type': 'course', 'id': course.id })
+                                    }}" 
+                                    class="btn {{ 
+                                        'ROLE_ADMIN' in userRoles or (course.id in purchasedCourses)
+                                        ? 'btn-follow'
+                                        : 'btn-primary'
+                                    }}">
+                                        {{ 'ROLE_ADMIN' in userRoles or (course.id in purchasedCourses) 
+                                            ? 'Suivre le Cursus' 
+                                            : 'Acheter le Cursus' 
+                                        }}
                                     </a>
 
                                     <h6 class="mt-4">Leçons incluses :</h6>
@@ -36,12 +46,21 @@
                                                 <p>{{ lesson.content }}</p>
                                                 <p><strong>Prix de la leçon : {{ lesson.price }}€</strong></p>
                                                 
-                                                {# Vérification si l'utilisateur a acheté la leçon ou si le cursus a été acheté #}
-                                                <a href="{{ (course.id in purchasedCourses) or (purchasedLessons is defined and lesson.id in purchasedLessons)
+                                                {# Lien pour suivre ou acheter une leçon #}
+                                                <a href="{{ 
+                                                    'ROLE_ADMIN' in userRoles or (course.id in purchasedCourses) or (lesson.id in purchasedLessons)
                                                     ? path('follow_lesson', { 'id': lesson.id }) 
-                                                    : path('shop_add_to_cart', { 'type': 'lesson', 'id': lesson.id }) }}" 
-                                                    class="btn {{ (course.id in purchasedCourses) or (lesson.id in purchasedLessons) ? 'btn-follow' : 'btn-outline-primary btn-sm' }}">
-                                                    {{ (course.id in purchasedCourses) or (lesson.id in purchasedLessons) ? 'Suivre la Leçon' : 'Acheter la Leçon' }}
+                                                    : path('shop_add_to_cart', { 'type': 'lesson', 'id': lesson.id }) 
+                                                }}" 
+                                                class="btn {{ 
+                                                    'ROLE_ADMIN' in userRoles or (course.id in purchasedCourses) or (lesson.id in purchasedLessons) 
+                                                    ? 'btn-follow' 
+                                                    : 'btn-outline-primary btn-sm' 
+                                                }}">
+                                                    {{ 'ROLE_ADMIN' in userRoles or (course.id in purchasedCourses) or (lesson.id in purchasedLessons) 
+                                                        ? 'Suivre la Leçon' 
+                                                        : 'Acheter la Leçon' 
+                                                    }}
                                                 </a>
                                             </li>
                                         {% endfor %}

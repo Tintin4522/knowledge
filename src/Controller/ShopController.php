@@ -16,7 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_CLIENT')]
 class ShopController extends AbstractController
 {
     private $entityManager;
@@ -28,6 +27,11 @@ class ShopController extends AbstractController
 
     #[Route('/shop', name: 'shop_index')]
     public function index(CoursesRepository $coursesRepo, LessonsRepository $lessonsRepo, EntityManagerInterface $entityManager): Response {
+
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         // Récupérer l'utilisateur connecté
         $user = $this->getUser();
     
@@ -55,6 +59,7 @@ class ShopController extends AbstractController
             'lessons' => $lessons,
             'purchasedCourses' => $purchasedCourses,
             'purchasedLessons' => $purchasedLessons,
+            'userRoles' => $this->getUser()->getRoles(),
         ]);
     }
     
@@ -66,6 +71,10 @@ class ShopController extends AbstractController
         EntityManagerInterface $entityManager,
         UserInterface $user
     ): Response {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         if ($type === 'course') {
             $product = $entityManager->getRepository(Courses::class)->find($id);
         } elseif ($type === 'lesson') {
@@ -117,6 +126,10 @@ class ShopController extends AbstractController
     #[Route('/shop/add/{type}/{id}', name: 'shop_add_to_cart')]
     public function addToCart($type, $id, SessionInterface $session)
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         $user = $this->getUser();
         if (!$user) {
             // Si l'utilisateur n'est pas connecté, rediriger vers la page de login
@@ -181,6 +194,10 @@ class ShopController extends AbstractController
     #[Route('/course/{id}/follow', name: 'follow_course')]
     public function followCourse(Courses $course): Response
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         return $this->render('courses/show.html.twig', [
             'course' => $course,
         ]);
@@ -189,6 +206,10 @@ class ShopController extends AbstractController
     #[Route('/lesson/{id}/follow', name: 'follow_lesson', requirements: ['id' => '\d+'])]
     public function followLesson(Lessons $lesson = null): Response
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         if (!$lesson) {
             throw $this->createNotFoundException('La leçon demandée est introuvable.');
         }

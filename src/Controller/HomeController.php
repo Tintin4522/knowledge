@@ -26,10 +26,13 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[IsGranted('ROLE_CLIENT')]
     #[Route('/lesson/{lessonId}/complete', name: 'complete_lesson', methods: ['POST'])]
     public function completeLesson(int $lessonId, LessonsRepository $lessonsRepository, LessonCompletionRepository $lessonCompletionRepository, EntityManagerInterface $em): Response
     {
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         // Récupérer la leçon
         $lesson = $lessonsRepository->find($lessonId);
         
@@ -70,7 +73,6 @@ class HomeController extends AbstractController
         return $this->redirectToRoute('follow_lesson', ['id' => $lessonId]);
     }
 
-    #[IsGranted('ROLE_CLIENT')]
     #[Route('/course/{courseId}/complete', name: 'complete_course', methods: ['POST'])]
     public function completeCourse(
         int $courseId,
@@ -78,6 +80,11 @@ class HomeController extends AbstractController
         CourseCompletionRepository $courseCompletionRepository,
         EntityManagerInterface $em
     ): Response {
+        
+        if (!$this->isGranted('ROLE_CLIENT') && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
+        }
+
         // Récupérer le cursus
         $course = $coursesRepository->find($courseId);
         
