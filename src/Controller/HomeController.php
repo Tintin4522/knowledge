@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class HomeController extends AbstractController
 {
@@ -25,6 +26,7 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_CLIENT')]
     #[Route('/lesson/{lessonId}/complete', name: 'complete_lesson', methods: ['POST'])]
     public function completeLesson(int $lessonId, LessonsRepository $lessonsRepository, LessonCompletionRepository $lessonCompletionRepository, EntityManagerInterface $em): Response
     {
@@ -68,6 +70,7 @@ class HomeController extends AbstractController
         return $this->redirectToRoute('follow_lesson', ['id' => $lessonId]);
     }
 
+    #[IsGranted('ROLE_CLIENT')]
     #[Route('/course/{courseId}/complete', name: 'complete_course', methods: ['POST'])]
     public function completeCourse(
         int $courseId,
@@ -120,6 +123,12 @@ class HomeController extends AbstractController
     #[Route('/completions', name: 'completion_list')]
     public function completion_list(LessonCompletionRepository $lessonCompletionRepository, CourseCompletionRepository $courseCompletionRepository): Response
     {
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+        }
+        
+        $courseCompletions = [];
+        $lessonCompletions = [];
         if ($this->isGranted('ROLE_ADMIN')) {
             // Si l'utilisateur est admin, charger les données pour tous les utilisateurs
             $courseCompletions = $courseCompletionRepository->findAll();  // Exemple pour récupérer toutes les complétions de cours
@@ -129,7 +138,7 @@ class HomeController extends AbstractController
                 'courseCompletions' => $courseCompletions,
                 'lessonCompletions' => $lessonCompletions,
             ]);
-        } else {
+        } elseif ($this->isGranted('ROLE_CLIENT')) {
             // Si l'utilisateur est un utilisateur normal, charger ses propres données
             $user = $this->getUser();
             $courseCompletions = $courseCompletionRepository->findBy(['user' => $user]);
