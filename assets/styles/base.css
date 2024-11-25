@@ -69,9 +69,7 @@ h2,h3 {
 p, ul, li {
     font-size: 1rem;             
     color: #384050;               
-    line-height: 1.5;            
-    margin-top: 10px;  
-    margin-bottom: 2rem;          
+    line-height: 1.5;                  
 }
 
 .container {

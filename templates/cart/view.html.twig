@@ -23,7 +23,7 @@
                 <thead>
                     <tr>
                         <th class="text-center">Nom</th>
-                        <th class="text-center">Titre de la leçon</th> {# Garde cette colonne pour afficher le contenu des leçons #}
+                        <th class="text-center">Titre de la leçon</th> 
                         <th class="text-center">Prix</th>
                         <th></th>
                     </tr>
@@ -34,11 +34,10 @@
                             <tr>
                                 <td>{{ item.name }}</td>
 
-                                {# Afficher content uniquement si item est une leçon #}
                                 {% if type == 'lessons' and item.content is defined %}
                                     <td>{{ item.content }}</td>
                                 {% else %}
-                                    <td>Module complet</td> {# Afficher "-" si ce n'est pas une leçon ou si content n'est pas défini #}
+                                    <td>Module complet</td> 
                                 {% endif %}
                                 
                                 <td class="text-center">{{ item.price }}€</td>
@@ -57,7 +56,7 @@
 
             <div class="d-flex justify-content-between mt-4">
                 <h3>Total : {{ total }}€</h3>
-                <a href="{{ path('cart_checkout') }}" class="btn btn-success">Passer à la caisse</a>
+                <a href="{{ path('cart_checkout') }}" class="btn btn-follow">Passer à la caisse</a>
             </div>
         {% endif %}
     </div>
