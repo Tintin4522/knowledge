@@ -97,7 +97,6 @@ class Order
         return $this;
     }
 
-    // Si tu veux gérer les IDs de cours et de leçons directement :
     public function getCourseIdDirect(): ?int
     {
         return $this->course_id;
