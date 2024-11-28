@@ -112,7 +112,6 @@ class Courses
     public function removeLesson(Lessons $lesson): static
     {
         if ($this->lessons->removeElement($lesson)) {
-            // set the owning side to null (unless already changed)
             if ($lesson->getCoursesId() === $this) {
                 $lesson->setCoursesId(null);
             }
@@ -142,7 +141,6 @@ class Courses
     public function removeOrderItem(OrderItems $orderItem): static
     {
         if ($this->orderItems->removeElement($orderItem)) {
-            // set the owning side to null (unless already changed)
             if ($orderItem->getCourse() === $this) {
                 $orderItem->setCourse(null);
             }
@@ -172,7 +170,6 @@ class Courses
     public function removeCourseCompletion(CourseCompletion $courseCompletion): static
     {
         if ($this->courseCompletions->removeElement($courseCompletion)) {
-            // set the owning side to null (unless already changed)
             if ($courseCompletion->getCourse() === $this) {
                 $courseCompletion->setCourseId(null);
             }

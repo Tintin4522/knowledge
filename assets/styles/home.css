@@ -7,6 +7,11 @@
     box-shadow: 0 2px 15px #0074c7; 
 }
 
+.inscrire {
+    text-decoration: none;
+    color: #0074c7;
+}
+
 .flash-message {
     width: 80%;
     margin: 2rem auto;

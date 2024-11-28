@@ -240,7 +240,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeOrder(Order $order): static
     {
         if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
             if ($order->getUserId() === $this) {
                 $order->setUserId(null);
             }
@@ -270,7 +269,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCertification(Certifications $certification): static
     {
         if ($this->certifications->removeElement($certification)) {
-            // set the owning side to null (unless already changed)
             if ($certification->getUserId() === $this) {
                 $certification->setUserId(null);
             }
@@ -300,7 +298,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeLessonCompletion(LessonCompletion $lessonCompletion): static
     {
         if ($this->lessonCompletions->removeElement($lessonCompletion)) {
-            // set the owning side to null (unless already changed)
             if ($lessonCompletion->getUser() === $this) {
                 $lessonCompletion->setUser(null);
             }
@@ -342,7 +339,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCourseCompletion(CourseCompletion $courseCompletion): static
     {
         if ($this->courseCompletions->removeElement($courseCompletion)) {
-            // set the owning side to null (unless already changed)
             if ($courseCompletion->getUser() === $this) {
                 $courseCompletion->setUser(null);
             }

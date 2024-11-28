@@ -82,7 +82,6 @@ class Themes
     public function removeCourse(Courses $course): static
     {
         if ($this->courses->removeElement($course)) {
-            // set the owning side to null (unless already changed)
             if ($course->getTheme() === $this) {
                 $course->setTheme(null);
             }
@@ -112,7 +111,6 @@ class Themes
     public function removeCertification(Certifications $certification): static
     {
         if ($this->certifications->removeElement($certification)) {
-            // set the owning side to null (unless already changed)
             if ($certification->getThemeId() === $this) {
                 $certification->setThemeId(null);
             }
