@@ -33,43 +33,35 @@ class HomeController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
         }
 
-        // Récupérer la leçon
         $lesson = $lessonsRepository->find($lessonId);
         
         if (!$lesson) {
             return $this->redirectToRoute('shop_index');
         }
 
-        // Récupérer l'utilisateur connecté
         $user = $this->getUser();
         if (!$user) {
-            return $this->redirectToRoute('login'); // ou page d'erreur
+            return $this->redirectToRoute('login'); 
         }
 
-        // Vérifier si l'utilisateur a déjà marqué cette leçon comme complétée
         $existingCompletion = $lessonCompletionRepository->findOneBy([
             'user' => $user,
             'lesson' => $lesson,
         ]);
 
         if ($existingCompletion) {
-            // Si déjà complétée, mettre à jour le statut
             $existingCompletion->setCompleted(true);
         } else {
-            // Sinon, créer une nouvelle entrée dans LessonCompletion
             $completion = new LessonCompletion();
             $completion->setUser($user);
             $completion->setLessonId($lesson);
             $completion->setCompleted(true);
 
-            // Persister l'objet dans la base de données
             $em->persist($completion);
         }
 
-        // Sauvegarder les changements
         $em->flush();
 
-        // Retourner à la page de suivi de la leçon
         return $this->redirectToRoute('follow_lesson', ['id' => $lessonId]);
     }
 
@@ -85,45 +77,35 @@ class HomeController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
         }
 
-        // Récupérer le cursus
         $course = $coursesRepository->find($courseId);
         
         if (!$course) {
-            // Si le cursus n'existe pas, rediriger vers la boutique
             return $this->redirectToRoute('shop_index');
         }
 
-        // Récupérer l'utilisateur connecté
         $user = $this->getUser();
         if (!$user) {
-            // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
             return $this->redirectToRoute('login');
         }
 
-        // Vérifier si l'utilisateur a déjà marqué ce cursus comme complété
         $existingCompletion = $courseCompletionRepository->findOneBy([
             'user' => $user,
             'course' => $course,
         ]);
 
         if ($existingCompletion) {
-            // Si déjà complété, mettre à jour le statut
             $existingCompletion->setCompleted(true);
         } else {
-            // Sinon, créer une nouvelle entrée dans CourseCompletion
             $completion = new CourseCompletion();
             $completion->setUser($user);
             $completion->setCourseId($course);
             $completion->setCompleted(true);
 
-            // Persister l'objet dans la base de données
             $em->persist($completion);
         }
 
-        // Sauvegarder les changements
         $em->flush();
 
-        // Retourner à la page de suivi du cursus
         return $this->redirectToRoute('follow_course', ['id' => $courseId]);
     }
 
@@ -137,16 +119,16 @@ class HomeController extends AbstractController
         $courseCompletions = [];
         $lessonCompletions = [];
         if ($this->isGranted('ROLE_ADMIN')) {
-            // Si l'utilisateur est admin, charger les données pour tous les utilisateurs
-            $courseCompletions = $courseCompletionRepository->findAll();  // Exemple pour récupérer toutes les complétions de cours
-            $lessonCompletions = $lessonCompletionRepository->findAll();  // Exemple pour récupérer toutes les complétions de leçons
+            // If user is admin, load data for all users
+            $courseCompletions = $courseCompletionRepository->findAll();  
+            $lessonCompletions = $lessonCompletionRepository->findAll();  
 
             return $this->render('admin/completion_users.html.twig', [
                 'courseCompletions' => $courseCompletions,
                 'lessonCompletions' => $lessonCompletions,
             ]);
         } elseif ($this->isGranted('ROLE_CLIENT')) {
-            // Si l'utilisateur est un utilisateur normal, charger ses propres données
+            // If the user is a client user, load their own data
             $user = $this->getUser();
             $courseCompletions = $courseCompletionRepository->findBy(['user' => $user]);
             $lessonCompletions = $lessonCompletionRepository->findBy(['user' => $user]);

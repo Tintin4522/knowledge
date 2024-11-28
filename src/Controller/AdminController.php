@@ -30,22 +30,19 @@ class AdminController extends AbstractController
     #[Route('/admin', name: 'admin_dashboard')]
     public function index(CoursesRepository $coursesRepo, LessonsRepository $lessonsRepo): Response
     {
-        $courses = $coursesRepo->findAll();  // Récupère tous les cursus
-        $lessons = $lessonsRepo->findAll();  // Récupère toutes les leçons
+        $courses = $coursesRepo->findAll();  
+        $lessons = $lessonsRepo->findAll();  
     
-        // Tableau pour associer chaque cursus avec ses leçons
         $groupedLessonsByCourse = [];
     
-        // Regroupe les leçons par cursus
         foreach ($lessons as $lesson) {
             $courseId = $lesson->getCourse()->getId(); 
             if (!isset($groupedLessonsByCourse[$courseId])) {
                 $groupedLessonsByCourse[$courseId] = []; 
             }
-            $groupedLessonsByCourse[$courseId][] = $lesson;  // Ajoute la leçon au tableau du cours
+            $groupedLessonsByCourse[$courseId][] = $lesson;  
         }
         
-        // Vérifie si un cours a des leçons, si ce n'est pas le cas, assigne une valeur vide
         foreach ($courses as $course) {
             if (!isset($groupedLessonsByCourse[$course->getId()])) {
                 $groupedLessonsByCourse[$course->getId()] = [];  

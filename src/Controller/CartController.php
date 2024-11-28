@@ -34,10 +34,8 @@ class CartController extends AbstractController
 
         $cart = $session->get('cart', []);
         
-        // Calcul du total
         $total = $this->calculateTotal($cart);
         
-        // Passer le total à la vue (si vous utilisez Twig ou autre)
         return $this->render('cart/view.html.twig', [
             'cart' => $cart,
             'total' => $total,
@@ -51,24 +49,19 @@ class CartController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
         }
 
-        // Récupérer le panier
         $cart = $session->get('cart', []);
     
-        // Parcourir chaque type d'éléments
         foreach ($cart as $type => $items) {
             foreach ($items as $key => $item) {
                 if (isset($item['order_item_id']) && $item['order_item_id'] == $id) {
-                    // Supprimer de la base de données
                     $orderItem = $em->getRepository(OrderItems::class)->find($id);
                     if ($orderItem) {
                         $em->remove($orderItem);
                         $em->flush();
                     }
     
-                    // Supprimer de la session
                     unset($cart[$type][$key]);
     
-                    // Mettre à jour la session
                     $session->set('cart', $cart);
     
                     $this->addFlash('success', 'Article supprimé du panier.');
@@ -97,7 +90,6 @@ class CartController extends AbstractController
             return $this->redirectToRoute('cart');
         }
     
-        // Calcul du total
         $total = $this->calculateTotal($cart);
         $totalFormatted = number_format($total, 2, '.', '');
     
@@ -105,12 +97,10 @@ class CartController extends AbstractController
             throw new \Exception('Le total de la commande ne peut pas être nul ou égal à zéro.');
         }
     
-        // Créer une nouvelle commande
         $order = new Order();
         $order->setUserId($user);
-        $order->setCreatedAt(new \DateTimeImmutable()); // Assurez-vous que le total est bien défini
+        $order->setCreatedAt(new \DateTimeImmutable()); 
     
-        // Ajouter les articles du panier à la commande
         foreach ($cart as $type => $items) {
             foreach ($items as $item) {
                 $orderItem = new OrderItems();
@@ -139,16 +129,13 @@ class CartController extends AbstractController
                     $orderItem->setItemType('lesson');
                 }
         
-                // Enregistrer l'élément de commande
                 $em->persist($orderItem);
             }
         }
     
-        // Enregistrer la commande
         $em->persist($order);
         $em->flush();
     
-        // Vider le panier
         $session->set('cart', []);
     
         return $this->redirectToRoute('order_confirmation', ['orderId' => $order->getId()]);
@@ -159,11 +146,11 @@ class CartController extends AbstractController
         $total = 0;
 
         foreach ($cart['courses'] ?? [] as $courseId => $course) {
-            $total += $course['price'];  // Le prix de chaque cours
+            $total += $course['price'];  
         }
         
         foreach ($cart['lessons'] ?? [] as $lessonId => $lesson) {
-            $total += $lesson['price'];  // Le prix de chaque leçon
+            $total += $lesson['price']; 
         }
 
         return $total;

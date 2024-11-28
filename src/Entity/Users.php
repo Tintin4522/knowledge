@@ -34,7 +34,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private array $roles = [];
-
+    
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 

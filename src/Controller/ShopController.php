@@ -32,18 +32,18 @@ class ShopController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page.');
         }
 
-        // Récupérer l'utilisateur connecté
+        // Retrieve logged in user
         $user = $this->getUser();
     
-        // Récupérer tous les cursus et leçons
+        // Collect all courses and lessons
         $courses = $coursesRepo->findAll();
         $lessons = $lessonsRepo->findAll();
     
-        // Récupérer les commandes de l'utilisateur
+        // Retrieve user commands
         $orderRepo = $entityManager->getRepository(Order::class);
         $purchasedItems = $orderRepo->findBy(['user_id' => $user]);
     
-        // Extraire les IDs des cursus et leçons achetés
+        // Extract IDs from purchased courses and lessons
         $purchasedCourses = [];
         $purchasedLessons = [];
         foreach ($purchasedItems as $item) {
@@ -87,19 +87,19 @@ class ShopController extends AbstractController
             throw $this->createNotFoundException('Produit non trouvé.');
         }
 
-        // Créer une nouvelle commande
+        // Create new Order
         $order = new Order();
         $order->setUserId($user);
-        $order->setCreatedAt(new \DateTimeImmutable());  // Montant total de la commande
+        $order->setCreatedAt(new \DateTimeImmutable()); 
 
         $entityManager->persist($order);
         $entityManager->flush();
 
-        // Créer un article de commande pour chaque produit acheté
+        // Create an order item for each product purchased
         $orderItem = new OrderItems();
 
 
-        // Ajouter le produit à l'article de commande en fonction de son type
+        // Add the product to the order item based on its type
         if ($type === 'course') {
             $orderItem->setItemType('course');
             $orderItem->setCourse($product);
@@ -108,8 +108,7 @@ class ShopController extends AbstractController
             $orderItem->setLesson($product);
         }
 
-        // Ajouter la quantité, le prix et le total
-        $orderItem->setQuantity(1); // Quantité par défaut (si tu veux gérer un panier, tu peux modifier cela)
+        $orderItem->setQuantity(1); // default quantity
         $orderItem->setPrice($product->getPrice());
         $orderItem->setTotal($product->getPrice());
 
@@ -119,7 +118,6 @@ class ShopController extends AbstractController
 
         $this->addFlash('success', 'Votre commande a bien été enregistrée !');
 
-        // Redirige vers la page des commandes (ou une page de confirmation de paiement)
         return $this->redirectToRoute('shop_index');
     }
 
@@ -132,15 +130,14 @@ class ShopController extends AbstractController
 
         $user = $this->getUser();
         if (!$user) {
-            // Si l'utilisateur n'est pas connecté, rediriger vers la page de login
             return $this->redirectToRoute('login');
         }
     
-        $cart = $session->get('cart', []);  // Récupère le panier (ou un tableau vide si aucun panier)
+        $cart = $session->get('cart', []);  
         
         if ($type === 'course') {
             $course = $this->entityManager->getRepository(Courses::class)->find($id);
-            // Ajouter le cursus au panier
+
             if ($course) {
                 $cart['courses'][$id] = [
                     'name' => $course->getName(),
@@ -161,7 +158,7 @@ class ShopController extends AbstractController
             }
         } elseif ($type === 'lesson') {
             $lesson = $this->entityManager->getRepository(Lessons::class)->find($id);
-            // Ajouter la leçon au panier
+
             if ($lesson) {
                 $cart['lessons'][$id] = [
                     'name' => $lesson->getName(),
@@ -184,10 +181,8 @@ class ShopController extends AbstractController
             }
         }
     
-        // Sauvegarder le panier dans la session
         $session->set('cart', $cart);
         
-        // Rediriger vers la boutique ou la page de paiement
         return $this->redirectToRoute('cart_view');
     }
 
